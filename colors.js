@@ -1,5 +1,5 @@
-export const colors = {
-  gray: {
-    DEFAULT: "#EFF2EF",
+module.exports = {
+  metal: {
+    DEFAULT: "#D9D9D9",
   },
 };
