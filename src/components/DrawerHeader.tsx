@@ -9,18 +9,16 @@ export default function DrawerHeader({
   options,
 }: DrawerHeaderProps) {
   return (
-    <SafeAreaView className="bg-white">
-      <View className="h-[50px] w-full flex-row items-center justify-between px-4">
-        <TouchableOpacity onPress={() => navigation.openDrawer()}>
-          <Menu color="#000000" />
-        </TouchableOpacity>
-        <View className="bg-gray-200 px-4 py-2 rounded-lg">
-          <Text>Get Plus</Text>
-        </View>
-        <TouchableOpacity>
-          <EllipsisVertical color="#000000" />
-        </TouchableOpacity>
+    <View className="h-[50px] w-full flex-row items-center justify-between px-4 bg-white">
+      <TouchableOpacity onPress={() => navigation.openDrawer()}>
+        <Menu color="#000000" />
+      </TouchableOpacity>
+      <View className="bg-gray-200 px-4 py-2 rounded-lg">
+        <Text>Get Plus</Text>
       </View>
-    </SafeAreaView>
+      <TouchableOpacity>
+        <EllipsisVertical color="#000000" />
+      </TouchableOpacity>
+    </View>
   );
 }
