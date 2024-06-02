@@ -8,6 +8,7 @@ import {
 } from "react-native";
 
 import {
+  ArrowUp,
   CameraIcon,
   FolderIcon,
   HeadphonesIcon,
@@ -25,7 +26,7 @@ import Animated, {
 
 const { width } = Dimensions.get("window");
 
-const MAX_WIDTH = width / 5.5;
+const MAX_WIDTH = width / 5.8;
 
 export default function MainInput() {
   const leftSide = useSharedValue(0);
@@ -39,6 +40,11 @@ export default function MainInput() {
     if (!typedInput.current && textValue.length >= 1) {
       typedInput.current = true;
       rightSide.value = withTiming(1, {
+        duration: 200,
+      });
+    } else if (typedInput.current && textValue.length < 1) {
+      typedInput.current = false;
+      rightSide.value = withTiming(0, {
         duration: 200,
       });
     }
@@ -84,6 +90,29 @@ export default function MainInput() {
     };
   });
 
+  const rightSideAnimatedMicroStyles = useAnimatedStyle(() => {
+    return {
+      opacity: interpolate(rightSide.value, [0, 1], [1, 0]),
+      marginLeft: interpolate(leftSide.value, [0, 1], [0, -22]),
+      transform: [
+        {
+          scale: interpolate(rightSide.value, [0, 1], [1, 0]),
+        },
+      ],
+    };
+  });
+
+  const rightSideAnimatedArrowStyles = useAnimatedStyle(() => {
+    return {
+      opacity: interpolate(rightSide.value, [0, 1], [0, 1]),
+      transform: [
+        {
+          scale: interpolate(rightSide.value, [0, 1], [0.1, 1]),
+        },
+      ],
+    };
+  });
+
   return (
     <View className="w-full h-[50px] px-4 flex-row items-center justify">
       <View className="flex-row items-center">
@@ -111,7 +140,7 @@ export default function MainInput() {
         </Animated.View>
       </View>
 
-      <View className="flex-1 mx-4">
+      <View className="flex-1 ml-3 mr-4">
         <View className="bg-gray-200 h-[40px] rounded-full flex-row items-center justify-between px-4">
           <TextInput
             placeholder="Message"
@@ -123,15 +152,29 @@ export default function MainInput() {
             value={textValue}
             onChangeText={(value) => setTextValue(value)}
           />
-          <TouchableOpacity>
-            <MicIcon width={22} color="#494949" />
-          </TouchableOpacity>
+          <Animated.View style={rightSideAnimatedMicroStyles}>
+            <TouchableOpacity>
+              <MicIcon width={22} color="#494949" />
+            </TouchableOpacity>
+          </Animated.View>
         </View>
       </View>
 
-      <TouchableOpacity>
-        <HeadphonesIcon color="#000000" width={22} />
-      </TouchableOpacity>
+      <View className="flex-row items-center pr-1.5">
+        <Animated.View className="items-center justify-center">
+          <TouchableOpacity>
+            <HeadphonesIcon color="#000000" width={22} />
+          </TouchableOpacity>
+        </Animated.View>
+        <Animated.View
+          className="bg-zinc-900 right-0 w-[35px] h-[35px] justify-center items-center rounded-full absolute"
+          style={rightSideAnimatedArrowStyles}
+        >
+          <TouchableOpacity>
+            <ArrowUp color="#FFFFFF" width={22} />
+          </TouchableOpacity>
+        </Animated.View>
+      </View>
     </View>
   );
 }
