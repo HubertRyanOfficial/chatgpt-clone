@@ -24,15 +24,18 @@ import Animated, {
   withTiming,
 } from "react-native-reanimated";
 
+import Loader from "./Loader";
+
 const { width } = Dimensions.get("window");
 
 const MAX_WIDTH = width / 5.8;
-const DURATION = 200;
+const DURATION = 160;
 
 function MainInput() {
   const leftSide = useSharedValue(0);
   const rightSide = useSharedValue(0);
 
+  const [loading, setLoading] = useState(false);
   const [textValue, setTextValue] = useState("");
   const focusedInput = useRef(false);
   const typedInput = useRef(false);
@@ -43,13 +46,13 @@ function MainInput() {
       rightSide.value = withTiming(1, {
         duration: DURATION,
       });
-    } else if (typedInput.current && textValue.length < 1) {
+    } else if (typedInput.current && textValue.length < 1 && !loading) {
       typedInput.current = false;
       rightSide.value = withTiming(0, {
         duration: DURATION,
       });
     }
-  }, [textValue, typedInput, rightSide]);
+  }, [textValue, typedInput, loading]);
 
   const handleInputFocus = useCallback(() => {
     if (focusedInput.current) return;
@@ -69,9 +72,14 @@ function MainInput() {
   }, [focusedInput, leftSide]);
 
   const handlePrompt = useCallback(() => {
+    const value = textValue;
+    setLoading(true);
+    setTextValue("");
     rightSide.value = withTiming(2, {
       duration: DURATION,
     });
+
+    setTimeout(() => setLoading(false), 1000);
   }, [textValue]);
 
   const leftSideAnimatedStyles = useAnimatedStyle(() => {
@@ -170,7 +178,7 @@ function MainInput() {
       </View>
 
       <View className="flex-1 ml-3 mr-4">
-        <View className="bg-gray-200 h-[40px] rounded-full flex-row items-center justify-between px-4">
+        <View className="bg-gray-200 h-[42px] rounded-full flex-row items-center justify-between px-4">
           <TextInput
             placeholder="Message"
             placeholderTextColor="#494949"
@@ -186,6 +194,11 @@ function MainInput() {
               <MicIcon width={22} color="#494949" />
             </TouchableOpacity>
           </Animated.View>
+          {loading && (
+            <Animated.View className="absolute right-4">
+              <Loader />
+            </Animated.View>
+          )}
         </View>
       </View>
 
@@ -210,7 +223,7 @@ function MainInput() {
           className="bg-zinc-900 right-0 w-[35px] h-[35px] justify-center items-center rounded-full absolute"
           style={rightSideAnimatedStopStyles}
         >
-          <TouchableOpacity onPress={() => {}}>
+          <TouchableOpacity onPress={() => setLoading(false)}>
             <View className="w-[13px] h-[13px] bg-white rounded-sm" />
           </TouchableOpacity>
         </Animated.View>
