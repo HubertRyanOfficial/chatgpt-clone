@@ -1,5 +1,11 @@
-import React, { useCallback, useRef, useState } from "react";
-import { View, TouchableOpacity, TextInput, Dimensions } from "react-native";
+import React, { useCallback, useEffect, useRef, useState } from "react";
+import {
+  View,
+  TouchableOpacity,
+  TextInput,
+  Dimensions,
+  Keyboard,
+} from "react-native";
 
 import {
   CameraIcon,
@@ -23,15 +29,34 @@ const MAX_WIDTH = width / 5.5;
 
 export default function MainInput() {
   const leftSide = useSharedValue(0);
+  const rightSide = useSharedValue(0);
 
   const [textValue, setTextValue] = useState("");
   const focusedInput = useRef(false);
+  const typedInput = useRef(false);
+
+  useEffect(() => {
+    if (!typedInput.current && textValue.length >= 1) {
+      typedInput.current = true;
+      rightSide.value = withTiming(1, {
+        duration: 200,
+      });
+    }
+  }, [textValue, typedInput, rightSide]);
 
   const handleInputFocus = useCallback(() => {
     if (focusedInput.current) return;
     focusedInput.current = true;
 
     leftSide.value = withTiming(1, {
+      duration: 230,
+    });
+  }, [focusedInput, leftSide]);
+
+  const handleOpenOptions = useCallback(() => {
+    Keyboard.dismiss();
+    focusedInput.current = false;
+    leftSide.value = withTiming(0, {
       duration: 230,
     });
   }, [focusedInput, leftSide]);
@@ -60,13 +85,15 @@ export default function MainInput() {
   });
 
   return (
-    <View className="w-full h-[50px] px-4 flex-row items-center justify ">
+    <View className="w-full h-[50px] px-4 flex-row items-center justify">
       <View className="flex-row items-center">
         <Animated.View
           className="bg-gray-200 w-[35px] h-[35px] justify-center items-center rounded-full absolute"
           style={leftPlusIconAnimatedStyles}
         >
-          <PlusIcon color="#494949" width={23} />
+          <TouchableOpacity onPress={handleOpenOptions}>
+            <PlusIcon color="#494949" width={23} />
+          </TouchableOpacity>
         </Animated.View>
         <Animated.View
           className="flex-row items-center gap-x-4"
@@ -92,6 +119,7 @@ export default function MainInput() {
             className="flex-1"
             selectionColor="#000000"
             onFocus={handleInputFocus}
+            onBlur={() => (focusedInput.current = false)}
             value={textValue}
             onChangeText={(value) => setTextValue(value)}
           />
