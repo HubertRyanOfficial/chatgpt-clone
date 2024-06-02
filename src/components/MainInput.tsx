@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { memo, useCallback, useEffect, useRef, useState } from "react";
 import {
   View,
   TouchableOpacity,
@@ -28,7 +28,7 @@ const { width } = Dimensions.get("window");
 
 const MAX_WIDTH = width / 5.8;
 
-export default function MainInput() {
+function MainInput() {
   const leftSide = useSharedValue(0);
   const rightSide = useSharedValue(0);
 
@@ -178,3 +178,5 @@ export default function MainInput() {
     </View>
   );
 }
+
+export default memo(MainInput);
